@@ -1006,55 +1006,111 @@
             },
         ];
 
-            {
-                nome: "🍖 ANOVA (1 Fator)",
-                emoji: "🍖",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "🧪 ANOVA Fatorial",
-                emoji: "🧪",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "⏳ ANOVA MR",
-                emoji: "⏳",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "📚 ANCOVA",
-                emoji: "📚",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "🏛️ MANOVA",
-                emoji: "🏛️",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "👑 MANCOVA",
-                emoji: "👑",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
-            {
-                nome: "❄️ Não-Paramétricos",
-                emoji: "❄️",
-                pares: [
-                    { id: 1, pt: { q: "Em desenvolvimento para v2.0", a: "Coming soon..." }, en: { q: "In development for v2.0", a: "Coming soon..." }, zh: { q: "正在开发v2.0", a: "即将推出..." } },
-                ]
-            },
+        let idioma = 'pt';
+        let estado = {
+            renoAtual: null,
+            cartas: [],
+            viradas: new Set(),
+            paresCompletos: new Set(),
+            selecionadas: [],
+            tempo: 0,
+            pontos: 0,
+            jogoCompleto: false,
+            intervaloTempo: null,
+            dificuldade: 'normal',
+            paresTotal: 6
+        };
+
+        function mudarIdioma(novoIdioma) {
+            idioma = novoIdioma;
+            document.querySelectorAll('.btn-idioma').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            atualizarTextos();
+        }
+
+        function atualizarTextos() {
+            const t = textos[idioma];
+            document.getElementById('titulo-principal').textContent = t.titulo;
+            document.getElementById('subtitulo-principal').textContent = t.subtitulo;
+            document.getElementById('label-basicos').textContent = t.labelBasicos;
+            document.getElementById('label-intermediarios').textContent = t.labelIntermediarios;
+            document.getElementById('label-avancados').textContent = t.labelAvancados;
+            document.getElementById('label-dificuldade').textContent = t.labelDificuldade;
+            document.getElementById('btn-facil').textContent = t.btnFacil;
+            document.getElementById('btn-normal').textContent = t.btnNormal;
+            document.getElementById('btn-dificil').textContent = t.btnDificil;
+            document.getElementById('btn-jogar').textContent = t.btnJogar;
+            document.getElementById('btn-menu-jogo').textContent = t.btnMenu;
+            document.getElementById('titulo-vitoria').textContent = t.tituloVitoria;
+            document.getElementById('texto-vitoria').textContent = t.textoVitoria;
+            document.getElementById('label-tempo-final').textContent = t.labelTempoFinal;
+            document.getElementById('btn-voltar-menu').textContent = t.btnVoltarMenu;
+            document.getElementById('label-tempo').textContent = t.labelTempo;
+            document.getElementById('label-pares').textContent = t.labelPares;
+            document.getElementById('label-restam').textContent = t.labelRestam;
+
+            // Atualizar nomes dos reinos
+            t.reinos.forEach((nome, idx) => {
+                const elem = document.getElementById('reino' + idx);
+                if (elem) elem.textContent = nome;
+            });
+        }
+
+        function selecionarReino(idx) {
+            document.querySelectorAll('.btn-reino').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            estado.renoAtual = idx;
+        }
+
+        function selecionarDificuldade(dif) {
+            document.querySelectorAll('.btn-dificuldade').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            estado.dificuldade = dif;
+            estado.paresTotal = dif === 'facil' ? 4 : dif === 'normal' ? 6 : 8;
+        }
+
+        function iniciarJogo() {
+            if (estado.renoAtual === null) {
+                alert(idioma === 'pt' ? 'Selecione um reino!' : idioma === 'en' ? 'Select a realm!' : '选择一个王国!');
+                return;
+            }
+
+            const reino = reinos[estado.renoAtual];
+            estado.tempo = 0;
+            estado.pontos = 0;
+            estado.jogoCompleto = false;
+            estado.viradas = new Set();
+            estado.paresCompletos = new Set();
+            estado.selecionadas = [];
+
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('jogo').classList.add('ativo');
+
+            const paresDisponiveis = [...reino.pares];
+            const paresSelecionados = [];
+            for (let i = 0; i < estado.paresTotal && paresDisponiveis.length > 0; i++) {
+                const idx = Math.floor(Math.random() * paresDisponiveis.length);
+                paresSelecionados.push(paresDisponiveis[idx]);
+                paresDisponiveis.splice(idx, 1);
+            }
+
+            const cartasGeradas = [];
+            paresSelecionados.forEach((par, idx) => {
+                const idioma_chave = idioma === 'pt' ? 'pt' : idioma === 'en' ? 'en' : 'zh';
+                const texto_pergunta = par[idioma_chave].q;
+                const texto_resposta = par[idioma_chave].a;
+                
+                cartasGeradas.push({ id: idx * 2, parId: par.id, conteudo: texto_pergunta, tipo: 'pergunta', icon: '❓' });
+                cartasGeradas.push({ id: idx * 2 + 1, parId: par.id, conteudo: texto_resposta, tipo: 'resposta', icon: '✓' });
+            });
+
+            for (let i = cartasGeradas.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cartasGeradas[i], cartasGeradas[j]] = [cartasGeradas[j], cartasGeradas[i]];
+            }
+
+            estado.cartas = cartasGeradas;
+
             document.getElementById('titulo-reino').textContent = reino.emoji + ' ' + (idioma === 'pt' ? reino.nome : idioma === 'en' ? textos.en.reinos[estado.renoAtual] : textos.zh.reinos[estado.renoAtual]);
             const diff_text = idioma === 'pt' ? (estado.dificuldade === 'facil' ? 'Fácil' : estado.dificuldade === 'normal' ? 'Normal' : 'Difícil') : idioma === 'en' ? (estado.dificuldade === 'facil' ? 'Easy' : estado.dificuldade === 'normal' ? 'Normal' : 'Hard') : (estado.dificuldade === 'facil' ? '简单' : estado.dificuldade === 'normal' ? '中等' : '困难');
             document.getElementById('info-dificuldade').textContent = `${diff_text} — ${estado.paresTotal} ${idioma === 'pt' ? 'pares' : idioma === 'en' ? 'pairs' : '对'}`;
