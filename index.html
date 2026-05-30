@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ MTPQI Memory Game — 14 Realms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #0d1117 0%, #2a1f1a 50%, #0d1117 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #f0c419;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .selector-idioma {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-idioma {
+            padding: 8px 12px;
+            border: 2px solid #d4a017;
+            background: rgba(212, 160, 23, 0.1);
+            color: #f0c419;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn-idioma:hover {
+            background: rgba(212, 160, 23, 0.3);
+        }
+
+        .btn-idioma.ativo {
+            background: #d4a017;
+            color: #0d1117;
+            border-color: #f0c419;
+        }
+
+        .menu {
+            text-align: center;
+        }
+
+        .menu.hidden {
+            display: none;
+        }
+
+        .titulo {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #d4a017;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            letter-spacing: 2px;
+        }
+
+        .subtitulo {
+            color: #f0c419;
+            margin-bottom: 30px;
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .emoji-grande {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .secao-reinos {
+            margin-bottom: 30px;
+        }
+
+        .titulo-reinos {
+            color: #d4a017;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #d4a017;
+            padding-bottom: 10px;
+        }
+
+        .grid-reinos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px;
+            font-size: 0.95em;
+            font-weight: bold;
+            border: 2px solid #d4a017;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+            background: rgba(212, 160, 23, 0.1);
+            color: #f0c419;
+        }
+
+        button:hover {
+            background: rgba(212, 160, 23, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 160, 23, 0.5);
+        }
+
+        .btn-reino.ativo {
+            background: #d4a017;
+            color: #0d1117;
+            border-color: #f0c419;
+        }
+
+        .dificuldade-seletor {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .btn-dificuldade {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        .btn-dificuldade.ativo {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: #fff;
+        }
+
+        .btn-jogar {
+            width: 100%;
+            background: linear-gradient(135deg, #d4a017 0%, #f0c419 100%);
+            color: #0d1117;
+            padding: 14px;
+            font-size: 1.1em;
+            margin-top: 20px;
+            border: none;
+        }
+
+        .btn-jogar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(212, 160, 23, 0.6);
+        }
+
+        .jogo {
+            display: none;
+        }
+
+        .jogo.ativo {
+            display: block;
+        }
+
+        .header-jogo {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .titulo-jogo {
+            font-size: 1.8em;
+            color: #d4a017;
+            margin-bottom: 10px;
+        }
+
+        .reino-jogo {
+            font-size: 0.9em;
+            color: #f0c419;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: rgba(212, 160, 23, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid #d4a017;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #f0c419;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .stat-valor {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #d4a017;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-menu-jogo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(212, 160, 23, 0.2);
+            color: #d4a017;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 6px;
+        }
+
+        .btn-menu-jogo:hover {
+            background: rgba(212, 160, 23, 0.4);
+        }
+
+        .grid-cartas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .carta {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #2a1f1a 0%, #1a1410 100%);
+            border: 2px solid #d4a017;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75em;
+            padding: 10px;
+            color: #f0c419;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            line-height: 1.2;
+        }
+
+        .carta::before {
+            content: attr(data-icon);
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.15;
+            top: 5px;
+            right: 5px;
+        }
+
+        .carta:hover:not(.casada) {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(212, 160, 23, 0.4);
+            border-color: #f0c419;
+        }
+
+        .carta.virada {
+            background: linear-gradient(135deg, #d4a017 0%, #f0c419 100%);
+            color: #0d1117;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(212, 160, 23, 0.6);
+            border-color: #f0c419;
+        }
+
+        .carta.casada {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: #ecfdf5;
+            opacity: 0.5;
+            cursor: default;
+            border-color: #27ae60;
+        }
+
+        .overlay-vitoria {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-vitoria.ativo {
+            display: flex;
+        }
+
+        .card-vitoria {
+            background: linear-gradient(135deg, #1a3a2a 0%, #0d1117 100%);
+            border: 3px solid #d4a017;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .emoji-vitoria {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .titulo-vitoria {
+            font-size: 1.8em;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .texto-vitoria {
+            color: #a7f3d0;
+            margin-bottom: 20px;
+        }
+
+        .box-tempo-vitoria {
+            background: rgba(212, 160, 23, 0.1);
+            border: 2px solid #d4a017;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tempo-label {
+            color: #d4a017;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .tempo-valor {
+            font-size: 2em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #f0c419;
+        }
+
+        .btn-voltar {
+            width: 100%;
+            background: #d4a017;
+            color: #0d1117;
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+        }
+
+        .btn-voltar:hover {
+            transform: scale(1.02);
+            background: #f0c419;
+        }
+
+        @media (max-width: 480px) {
+            .titulo {
+                font-size: 1.8em;
+            }
+
+            .grid-reinos {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-cartas {
+                gap: 8px;
+            }
+
+            .carta {
+                font-size: 0.65em;
+            }
+
+            .selector-idioma {
+                gap: 4px;
+            }
+
+            .btn-idioma {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SELETOR DE IDIOMA -->
+        <div class="selector-idioma">
+            <button class="btn-idioma ativo" onclick="mudarIdioma('pt')">🇧🇷 Português</button>
+            <button class="btn-idioma" onclick="mudarIdioma('en')">🇺🇸 English</button>
+            <button class="btn-idioma" onclick="mudarIdioma('zh')">🇨🇳 中文</button>
+        </div>
+
+        <!-- MENU INICIAL -->
+        <div id="menu" class="menu">
+            <div class="emoji-grande">⚔️</div>
+            <h1 class="titulo" id="titulo-principal">MTPQI</h1>
+            <p class="subtitulo" id="subtitulo-principal">Jogo da Memória — 14 Reinos</p>
+
+            <!-- REINOS BÁSICOS -->
+            <div class="secao-reinos">
+                <div class="titulo-reinos" id="label-basicos">🌍 Reinos Básicos</div>
+                <div class="grid-reinos">
+                    <button class="btn-reino" onclick="selecionarReino(0)">📜 <span id="reino0">Pesquisa Quanti</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(1)">🏔️ <span id="reino1">Estatística Descritiva</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(2)">🏛️ <span id="reino2">Probabilidade</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(3)">🏘️ <span id="reino3">Amostragem</span></button>
+                </div>
+            </div>
+
+            <!-- REINOS INTERMEDIÁRIOS -->
+            <div class="secao-reinos">
+                <div class="titulo-reinos" id="label-intermediarios">⚖️ Reinos Intermediários</div>
+                <div class="grid-reinos">
+                    <button class="btn-reino" onclick="selecionarReino(4)">⚖️ <span id="reino4">Testes de Hipóteses</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(5)">🗡️ <span id="reino5">Teste t</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(6)">🌈 <span id="reino6">TOST</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(7)">🍖 <span id="reino7">ANOVA (1 Fator)</span></button>
+                </div>
+            </div>
+
+            <!-- REINOS AVANÇADOS -->
+            <div class="secao-reinos">
+                <div class="titulo-reinos" id="label-avancados">👑 Reinos Avançados</div>
+                <div class="grid-reinos">
+                    <button class="btn-reino" onclick="selecionarReino(8)">🧪 <span id="reino8">ANOVA Fatorial</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(9)">⏳ <span id="reino9">ANOVA MR</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(10)">📚 <span id="reino10">ANCOVA</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(11)">🏛️ <span id="reino11">MANOVA</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(12)">👑 <span id="reino12">MANCOVA</span></button>
+                    <button class="btn-reino" onclick="selecionarReino(13)">❄️ <span id="reino13">Não-Paramétricos</span></button>
+                </div>
+            </div>
+
+            <!-- DIFICULDADE -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #d4a017;">
+                <div style="color: #d4a017; font-size: 0.95em; margin-bottom: 15px;" id="label-dificuldade">Dificuldade</div>
+                <div class="dificuldade-seletor">
+                    <button class="btn-dificuldade ativo" onclick="selecionarDificuldade('facil')" id="btn-facil">Fácil (4)</button>
+                    <button class="btn-dificuldade" onclick="selecionarDificuldade('normal')" id="btn-normal">Normal (6)</button>
+                    <button class="btn-dificuldade" onclick="selecionarDificuldade('dificil')" id="btn-dificil">Difícil (8)</button>
+                </div>
+            </div>
+
+            <button class="btn-jogar" onclick="iniciarJogo()" id="btn-jogar">⚔️ Começar Jogo</button>
+        </div>
+
+        <!-- JOGO -->
+        <div id="jogo" class="jogo">
+            <button class="btn-menu-jogo" onclick="voltarMenu()" id="btn-menu-jogo">← Menu</button>
+            
+            <div class="header-jogo">
+                <div class="titulo-jogo" id="titulo-reino">🏔️ Estatística Descritiva</div>
+                <div class="reino-jogo" id="info-dificuldade">Modo Normal — 6 pares</div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label" id="label-tempo">⏱️ Tempo</div>
+                        <div class="stat-valor" id="tempo">00:00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-pares">✓ Pares</div>
+                        <div class="stat-valor" id="pares">0/6</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-restam">🎯 Restam</div>
+                        <div class="stat-valor" id="restam">6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-cartas" id="grid-cartas"></div>
+        </div>
+    </div>
+
+    <!-- TELA DE VITÓRIA -->
+    <div id="overlay-vitoria" class="overlay-vitoria">
+        <div class="card-vitoria">
+            <div class="emoji-vitoria">🎉</div>
+            <h2 class="titulo-vitoria" id="titulo-vitoria">Vitória!</h2>
+            <p class="texto-vitoria" id="texto-vitoria">Você conquistou este reino!</p>
+
+            <div class="box-tempo-vitoria">
+                <div class="tempo-label" id="label-tempo-final">Tempo Final</div>
+                <div class="tempo-valor" id="tempo-final">00:00</div>
+            </div>
+
+            <button class="btn-voltar" onclick="voltarMenu()" id="btn-voltar-menu">← Voltar ao Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // IDIOMAS
+        const textos = {
+            pt: {
+                titulo: 'MTPQI',
+                subtitulo: 'Jogo da Memória — 14 Reinos',
+                labelBasicos: '🌍 Reinos Básicos',
+                labelIntermediarios: '⚖️ Reinos Intermediários',
+                labelAvancados: '👑 Reinos Avançados',
+                labelDificuldade: 'Dificuldade',
+                btnFacil: 'Fácil (4)',
+                btnNormal: 'Normal (6)',
+                btnDificil: 'Difícil (8)',
+                btnJogar: '⚔️ Começar Jogo',
+                labelTempo: '⏱️ Tempo',
+                labelPares: '✓ Pares',
+                labelRestam: '🎯 Restam',
+                btnMenu: '← Menu',
+                tituloVitoria: 'Vitória!',
+                textoVitoria: 'Você conquistou este reino!',
+                labelTempoFinal: 'Tempo Final',
+                btnVoltarMenu: '← Voltar ao Menu',
+                reinos: ['Pesquisa Quantitativa', 'Estatística Descritiva', 'Probabilidade', 'Amostragem', 'Testes de Hipóteses', 'Teste t', 'TOST', 'ANOVA (1 Fator)', 'ANOVA Fatorial', 'ANOVA MR', 'ANCOVA', 'MANOVA', 'MANCOVA', 'Não-Paramétricos']
+            },
+            en: {
+                titulo: 'MTPQI',
+                subtitulo: 'Memory Game — 14 Realms',
+                labelBasicos: '🌍 Basic Realms',
+                labelIntermediarios: '⚖️ Intermediate Realms',
+                labelAvancados: '👑 Advanced Realms',
+                labelDificuldade: 'Difficulty',
+                btnFacil: 'Easy (4)',
+                btnNormal: 'Normal (6)',
+                btnDificil: 'Hard (8)',
+                btnJogar: '⚔️ Start Game',
+                labelTempo: '⏱️ Time',
+                labelPares: '✓ Pairs',
+                labelRestam: '🎯 Left',
+                btnMenu: '← Menu',
+                tituloVitoria: 'Victory!',
+                textoVitoria: 'You conquered this realm!',
+                labelTempoFinal: 'Final Time',
+                btnVoltarMenu: '← Back to Menu',
+                reinos: ['Quantitative Research', 'Descriptive Statistics', 'Probability', 'Sampling', 'Hypothesis Testing', 'T-test', 'TOST', 'ANOVA (One Factor)', 'Factorial ANOVA', 'Repeated Measures ANOVA', 'ANCOVA', 'MANOVA', 'MANCOVA', 'Non-parametric Tests']
+            },
+            zh: {
+                titulo: 'MTPQI',
+                subtitulo: '记忆游戏 — 14个王国',
+                labelBasicos: '🌍 基础王国',
+                labelIntermediarios: '⚖️ 中级王国',
+                labelAvancados: '👑 高级王国',
+                labelDificuldade: '难度',
+                btnFacil: '简单 (4)',
+                btnNormal: '中等 (6)',
+                btnDificil: '困难 (8)',
+                btnJogar: '⚔️ 开始游戏',
+                labelTempo: '⏱️ 时间',
+                labelPares: '✓ 对数',
+                labelRestam: '🎯 剩余',
+                btnMenu: '← 菜单',
+                tituloVitoria: '胜利！',
+                textoVitoria: '你征服了这个王国！',
+                labelTempoFinal: '最终时间',
+                btnVoltarMenu: '← 返回菜单',
+                reinos: ['量化研究', '描述性统计', '概率论', '抽样', '假设检验', 'T检验', 'TOST', '单因素方差分析', '多因素方差分析', '重复测量方差分析', '协方差分析', '多元方差分析', '多元协方差分析', '非参数检验']
+            }
+        };
+
+        // DADOS DOS 14 REINOS (pares em PT, EN, ZH)
+        const reinos = [
+            {
+                nome: "📜 Pesquisa Quantitativa",
+                emoji: "📜",
+                pares: [
+                    { id: 1, pt: "Quanti vs Quali: qual busca explicar relações entre variáveis?", en: "Quantitative vs Qualitative: which seeks to explain relationships between variables?", zh: "量化与定性：哪种方法寻求解释变量之间的关系?" },
+                    { id: 2, pt: "Variável que o pesquisador manipula", en: "Variable that the researcher manipulates", zh: "研究者操纵的变量" },
+                    { id: 3, pt: "Variável que se espera mudar em resposta à VI", en: "Variable expected to change in response to IV", zh: "预期随自变量变化而改变的变量" },
+                    { id: 4, pt: "Afirmação testável sobre relação entre variáveis", en: "Testable statement about relationships between variables", zh: "关于变量间关系的可检验陈述" },
+                    { id: 5, pt: "Capacidade de um instrumento medir o que promete", en: "Ability of an instrument to measure what it promises", zh: "一个工具衡量其承诺的东西的能力" },
+                    { id: 6, pt: "Consistência e reprodutibilidade de um instrumento", en: "Consistency and reproducibility of an instrument", zh: "一个工具的一致性和可复现性" },
+                    { id: 7, pt: "Nominal, ordinal, intervalar — são escalas de...", en: "Nominal, ordinal, interval — are scales of...", zh: "名义、序序、区间 — 是...的尺度" },
+                    { id: 8, pt: "Escala onde ordem importa mas sem origem zero", en: "Scale where order matters but no zero origin", zh: "顺序重要但没有零起点的尺度" },
+                    { id: 9, pt: "Variáveis não atribuíveis ao tratamento", en: "Variables not attributable to treatment", zh: "不可归因于治疗的变量" },
+                    { id: 10, pt: "Capacidade de generalizar para população-alvo", en: "Ability to generalize to target population", zh: "推广到目标人群的能力" },
+                    { id: 11, pt: "Hipótese que prediz diferença sem direção", en: "Hypothesis that predicts difference without direction", zh: "预测差异但不指定方向的假设" },
+                    { id: 12, pt: "Erro sistemático na mensuração", en: "Systematic error in measurement", zh: "测量中的系统误差" },
+                    { id: 13, pt: "Desenho com mesmos participantes em múltiplas condições", en: "Design with same participants across conditions", zh: "在多个条件下使用相同参与者的设计" },
+                    { id: 14, pt: "Modificar hipótese após ver resultados (QRP)", en: "Modify hypothesis after seeing results (QRP)", zh: "看到结果后修改假设 (QRP)" },
+                    { id: 15, pt: "Testar múltiplas hipóteses sem corrigir α", en: "Test multiple hypotheses without correcting α", zh: "不修正α而测试多个假设" },
+                    { id: 16, pt: "Paradigma preferido em MTPQI", en: "Paradigm preferred in MTPQI", zh: "MTPQI中首选的范式" },
+                    { id: 17, pt: "Intervalo que contém parâmetro com (1-α)% confiança", en: "Interval containing parameter with (1-α)% confidence", zh: "包含参数的区间，置信度为(1-α)%" },
+                    { id: 18, pt: "Crise que motiva reforma metodológica", en: "Crisis motivating methodological reform", zh: "促进方法改革的危机" },
+                    { id: 19, pt: "Registrar análises ANTES de acessar dados", en: "Register analyses BEFORE accessing data", zh: "在访问数据前注册分析" },
+                    { id: 20, pt: "Variável não medida que causa confundimento", en: "Unmeasured variable causing confounding", zh: "导致混淆的未测量变量" },
+                    { id: 21, pt: "Efeito que aparece em amostra mas não em população", en: "Effect appearing in sample but not population", zh: "在样本中出现但不在总体中的效果" },
+                    { id: 22, pt: "Falta de sensibilidade para detectar efeito real", en: "Lack of sensitivity to detect real effect", zh: "缺乏检测真实效果的敏感性" },
+                    { id: 23, pt: "Capacidade de um estudo detectar efeito real quando existe", en: "Study's ability to detect true effect when exists", zh: "当真实效果存在时研究检测它的能力" },
+                    { id: 24, pt: "Variável Independente resposta VI", en: "Dependent Variable response to IV", zh: "自变量的因变量响应" }
+                ]
+            },
+            {
+                nome: "🏔️ Estatística Descritiva",
+                emoji: "🏔️",
+                pares: [
+                    { id: 1, pt: "Qual medida é afetada por valores extremos?", en: "Which measure is affected by extreme values?", zh: "哪个测度受极值影响？" },
+                    { id: 2, pt: "Qual medida é resistente a outliers?", en: "Which measure is resistant to outliers?", zh: "哪个测度对异常值有抵抗力？" },
+                    { id: 3, pt: "Qual valor aparece com maior frequência?", en: "Which value appears most frequently?", zh: "哪个值出现最频繁？" },
+                    { id: 4, pt: "Raiz quadrada da variância", en: "Square root of variance", zh: "方差的平方根" },
+                    { id: 5, pt: "Quanto os dados variam em relação à média?", en: "How much do data vary relative to mean?", zh: "数据相对于平均值的变化程度?" },
+                    { id: 6, pt: "Diferença entre maior e menor valor", en: "Difference between largest and smallest value", zh: "最大值和最小值之间的差异" },
+                    { id: 7, pt: "25% dos dados abaixo, 75% acima", en: "25% of data below, 75% above", zh: "25%的数据低于，75%高于" },
+                    { id: 8, pt: "50% dos dados abaixo e acima (outro nome)", en: "50% of data below and above (another name)", zh: "50%的数据低于和高于（另一个名字）" },
+                    { id: 9, pt: "75% dos dados abaixo, 25% acima", en: "75% of data below, 25% above", zh: "75%的数据低于，25%高于" },
+                    { id: 10, pt: "Diferença entre Q3 e Q1", en: "Difference between Q3 and Q1", zh: "Q3和Q1之间的差异" },
+                    { id: 11, pt: "Dispersão / Média (em percentual)", en: "Dispersion / Mean (in percentage)", zh: "离散度/平均值（百分比）" },
+                    { id: 12, pt: "Quantas unidades de DP um valor está da média?", en: "How many SD units is a value from the mean?", zh: "一个值离均值有多少个SD单位？" },
+                    { id: 13, pt: "Valores fora de 1.5 × IQR acima/abaixo quartis", en: "Values outside 1.5 × IQR above/below quartiles", zh: "在1.5 × IQR之外上/下四分位数的值" },
+                    { id: 14, pt: "Em distribuição simétrica: Média ≈ Mediana ≈...?", en: "In symmetric distribution: Mean ≈ Median ≈...?", zh: "在对称分布中：平均值 ≈ 中位数 ≈...?" },
+                    { id: 15, pt: "Distribuição com cauda à direita: Média > Mediana > Moda?", en: "Right-skewed: Mean > Median > Mode?", zh: "右偏态：平均值 > 中位数 > 众数?" },
+                    { id: 16, pt: "Percentual de dados em ±1σ (distribuição normal)", en: "Percent of data in ±1σ (normal distribution)", zh: "±1σ中的数据百分比（正态分布）" },
+                    { id: 17, pt: "Percentual de dados entre ±2σ (normal)", en: "Percent of data between ±2σ (normal)", zh: "±2σ之间的数据百分比（正态）" },
+                    { id: 18, pt: "Aproximação 68-95-99.7 para distribuições simétricas", en: "68-95-99.7 approximation for symmetric distributions", zh: "对称分布的68-95-99.7近似" },
+                    { id: 19, pt: "Gráfico com barras contíguas de frequência", en: "Graph with contiguous bars of frequency", zh: "具有连续频率条的图表" },
+                    { id: 20, pt: "Gráfico de caixa mostrando mediana, quartis e outliers", en: "Box plot showing median, quartiles, outliers", zh: "显示中位数、四分位数和异常值的箱线图" },
+                    { id: 21, pt: "Gráfico com pontos conectados para mudanças", en: "Graph with connected points for changes", zh: "具有连接点以显示变化的图表" },
+                    { id: 22, pt: "Transformação (log, raiz) reduz assimetria", en: "Transformation (log, square root) reduces skewness", zh: "变换（对数、平方根）减少偏度" },
+                    { id: 23, pt: "Em dados simétricos, qual é a melhor medida central?", en: "In symmetric data, which is best central measure?", zh: "在对称数据中，哪个是最好的中心测度？" },
+                    { id: 24, pt: "Em dados assimétricos, qual é resistente?", en: "In skewed data, which is resistant?", zh: "在偏斜数据中，哪个有抵抗力？" }
+                ]
+            },
+            {
+                nome: "🏛️ Probabilidade",
+                emoji: "🏛️",
+                pares: [
+                    { id: 1, pt: "Número entre 0-1 que mede chance de evento", en: "Number between 0-1 measuring chance of event", zh: "衡量事件机会的0-1之间的数字" },
+                    { id: 2, pt: "P(A) = 0", en: "P(A) = 0", zh: "P(A) = 0" },
+                    { id: 3, pt: "P(A) = 1", en: "P(A) = 1", zh: "P(A) = 1" },
+                    { id: 4, pt: "Todos os resultados possíveis de um experimento", en: "All possible outcomes of an experiment", zh: "一个实验的所有可能结果" },
+                    { id: 5, pt: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)", en: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)", zh: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)" },
+                    { id: 6, pt: "P(A ∩ B) = P(A) × P(B) quando independentes", en: "P(A ∩ B) = P(A) × P(B) when independent", zh: "当独立时 P(A ∩ B) = P(A) × P(B)" },
+                    { id: 7, pt: "P(A|B) = probabilidade de A dado B", en: "P(A|B) = probability of A given B", zh: "P(A|B) = 给定B的A的概率" },
+                    { id: 8, pt: "Eventos mutuamente excludentes: P(A ∩ B) = ...?", en: "Mutually exclusive events: P(A ∩ B) = ...?", zh: "互斥事件：P(A ∩ B) = ...?" },
+                    { id: 9, pt: "Eventos independentes: P(A|B) = ...?", en: "Independent events: P(A|B) = ...?", zh: "独立事件：P(A|B) = ...?" },
+                    { id: 10, pt: "P(A) + P(A') = ?", en: "P(A) + P(A') = ?", zh: "P(A) + P(A') = ?" },
+                    { id: 11, pt: "Todos os eventos que não são A", en: "All events that are not A", zh: "所有不是A的事件" },
+                    { id: 12, pt: "Probabilidade de pelo menos um evento ocorrer", en: "Probability of at least one event occurring", zh: "至少一个事件发生的概率" },
+                    { id: 13, pt: "Probabilidade de ambos eventos ocorrerem", en: "Probability of both events occurring", zh: "两个事件都发生的概率" },
+                    { id: 14, pt: "Teorema: P(B|A) = P(A|B) × P(B) / P(A)", en: "Theorem: P(B|A) = P(A|B) × P(B) / P(A)", zh: "定理：P(B|A) = P(A|B) × P(B) / P(A)" },
+                    { id: 15, pt: "Distribuição com p=0.5, n tentativas", en: "Distribution with p=0.5, n trials", zh: "具有p=0.5、n个试验的分布" },
+                    { id: 16, pt: "Distribuição contínua, simétrica, parâmetros μ e σ", en: "Continuous, symmetric distribution, parameters μ and σ", zh: "连续、对称分布，参数μ和σ" },
+                    { id: 17, pt: "Distribuição de eventos raros em intervalo fixo", en: "Distribution of rare events in fixed interval", zh: "固定区间内稀有事件的分布" },
+                    { id: 18, pt: "Distribuição da soma/média de variáveis", en: "Distribution of sum/mean of random variables", zh: "随机变量的和/平均值的分布" },
+                    { id: 19, pt: "Variável que assume valores discretos finitos", en: "Variable assuming finite discrete values", zh: "假设有限离散值的变量" },
+                    { id: 20, pt: "Variável assumindo infinitos valores em intervalo", en: "Variable assuming infinite values in interval", zh: "在区间内假设无限值的变量" },
+                    { id: 21, pt: "Valor esperado de uma variável aleatória", en: "Expected value of random variable", zh: "随机变量的期望值" },
+                    { id: 22, pt: "E(X²) - [E(X)]² = ?", en: "E(X²) - [E(X)]² = ?", zh: "E(X²) - [E(X)]² = ?" },
+                    { id: 23, pt: "Raiz quadrada da variância de X", en: "Square root of variance of X", zh: "X的方差的平方根" },
+                    { id: 24, pt: "Probabilidade de valor x ou mais extremo sob H₀", en: "Probability of value x or more extreme under H₀", zh: "在H₀下值x或更极端的概率" }
+                ]
+            },
+            {
+                nome: "🏘️ Amostragem",
+                emoji: "🏘️",
+                pares: [
+                    { id: 1, pt: "Grupo inteiro de interesse em pesquisa", en: "Entire group of interest in research", zh: "研究中感兴趣的整个组" },
+                    { id: 2, pt: "Subconjunto da população selecionado para estudo", en: "Subset of population selected for study", zh: "为研究选择的总体的子集" },
+                    { id: 3, pt: "Cada indivíduo na população", en: "Each individual in the population", zh: "人口中的每个个体" },
+                    { id: 4, pt: "Método onde cada indivíduo tem igual chance", en: "Method where each individual has equal chance", zh: "每个个体都有相等机会的方法" },
+                    { id: 5, pt: "Seleção não-aleatória de voluntários", en: "Non-random selection of volunteers", zh: "志愿者的非随机选择" },
+                    { id: 6, pt: "Divide população em estratos, sorteia de cada", en: "Divides population into strata, samples each", zh: "将人口分成层，对每一层进行抽样" },
+                    { id: 7, pt: "Agrupa população em clusters, seleciona inteiros", en: "Groups population into clusters, selects whole", zh: "将人口分组为集群，选择整个集群" },
+                    { id: 8, pt: "Seleção a cada k-ésimo indivíduo", en: "Selection every k-th individual", zh: "每第k个个体的选择" },
+                    { id: 9, pt: "Erro que reduz representatividade da amostra", en: "Error that reduces representativeness", zh: "降低样本代表性的误差" },
+                    { id: 10, pt: "Diferença esperada entre amostra e população", en: "Expected difference between sample and population", zh: "样本和总体之间的预期差异" },
+                    { id: 11, pt: "Intervalo contendo parâmetro com (1-α)% confiança", en: "Interval containing parameter with (1-α)% confidence", zh: "包含参数的区间，置信度为(1-α)%" },
+                    { id: 12, pt: "Diferença máxima esperada entre amostra e população", en: "Maximum expected difference between sample and population", zh: "样本和总体之间的最大预期差异" },
+                    { id: 13, pt: "Distribuição de estatística em múltiplas amostras", en: "Distribution of statistic across samples", zh: "多个样本中统计量的分布" },
+                    { id: 14, pt: "SE = σ/√n; σ população, n amostra", en: "SE = σ/√n; σ population, n sample", zh: "SE = σ/√n；σ人口，n样本" },
+                    { id: 15, pt: "Aumentar n reduz SE → IC fica...?", en: "Increasing n reduces SE → CI becomes...?", zh: "增加n减少SE → CI变成...?" },
+                    { id: 16, pt: "Tamanho mínimo de amostra para estimativa confiável", en: "Minimum sample size for reliable estimate", zh: "可靠估计的最小样本量" },
+                    { id: 17, pt: "Margem de erro tolerável em pesquisa", en: "Tolerable margin of error in research", zh: "研究中可容忍的误差范围" },
+                    { id: 18, pt: "Poder estatístico desejado no cálculo de N", en: "Desired statistical power in N calculation", zh: "N计算中所需的统计功效" },
+                    { id: 19, pt: "Coeficiente crítico z para IC 95%", en: "Critical z coefficient for 95% CI", zh: "95% CI的临界z系数" },
+                    { id: 20, pt: "Coeficiente crítico z para IC 99%", en: "Critical z coefficient for 99% CI", zh: "99% CI的临界z系数" },
+                    { id: 21, pt: "Redução de N aumenta...?", en: "Reducing N increases...?", zh: "减少N增加...?" },
+                    { id: 22, pt: "Amostra grande (N→∞) melhora...?", en: "Large sample (N→∞) improves...?", zh: "大样本（N→∞）改善...?" },
+                    { id: 23, pt: "Seleção não-aleatória sub-representando grupos", en: "Non-random selection under-representing groups", zh: "代表性不足的非随机选择" },
+                    { id: 24, pt: "N grandes detectam efeitos praticamente insignificantes", en: "Large N detects trivially small effects", zh: "大N检测微不足道的效果" }
+                ]
+            },
+            // Reinos 5-13 (simplificado, com pares principais)
+            {
+                nome: "⚖️ Testes de Hipóteses",
+                emoji: "⚖️",
+                pares: [
+                    { id: 1, pt: "Afirmação que assumimos verdadeira até evidência contrária", en: "Statement assumed true until contrary evidence", zh: "假设为真，直到有相反的证据" },
+                    { id: 2, pt: "Afirmação alternativa que queremos testar", en: "Alternative statement we want to test", zh: "我们想要测试的替代陈述" },
+                    { id: 3, pt: "Rejeitar H₀ verdadeira", en: "Reject true H₀", zh: "拒绝真实的H₀" },
+                    { id: 4, pt: "Falhar em rejeitar H₀ falsa", en: "Fail to reject false H₀", zh: "未能拒绝虚假的H₀" },
+                    { id: 5, pt: "Probabilidade pré-definida de cometer Erro Tipo I", en: "Pre-defined probability of Type I Error", zh: "第一类错误的预定义概率" },
+                    { id: 6, pt: "Valor padrão de α em pesquisa", en: "Standard value of α in research", zh: "研究中α的标准值" },
+                    { id: 7, pt: "Probabilidade de não cometer Erro Tipo II", en: "Probability of not making Type II Error", zh: "不犯第二类错误的概率" },
+                    { id: 8, pt: "Probabilidade de rejeitar H₀ quando verdadeira", en: "Probability of rejecting H₀ when true", zh: "当H₀为真时拒绝它的概率" },
+                    { id: 9, pt: "Probabilidade de não rejeitar H₀ quando verdadeira", en: "Probability of not rejecting H₀ when true", zh: "当H₀为真时不拒绝它的概率" },
+                    { id: 10, pt: "Probabilidade de rejeitar H₀ quando falsa", en: "Probability of rejecting H₀ when false", zh: "当H₀为假时拒绝它的概率" },
+                    { id: 11, pt: "Probabilidade observada sob H₀ verdadeira", en: "Probability observed under true H₀", zh: "在真实H₀下观察到的概率" },
+                    { id: 12, pt: "Regra: se p < α, então...?", en: "Rule: if p < α, then...?", zh: "规则：如果p <α，则...?" },
+                    { id: 13, pt: "p > α significa...?", en: "p > α means...?", zh: "p > α意味着...?" },
+                    { id: 14, pt: "Diferença entre significância estatística e prática", en: "Difference between statistical and practical significance", zh: "统计和实际显著性之间的差异" },
+                    { id: 15, pt: "Tamanho padronizado do efeito observado", en: "Standardized effect size observed", zh: "观察到的标准化效果大小" },
+                    { id: 16, pt: "d = 0.2 é efeito...?", en: "d = 0.2 is effect...?", zh: "d = 0.2是...效果？" },
+                    { id: 17, pt: "d = 0.5 é efeito...?", en: "d = 0.5 is effect...?", zh: "d = 0.5是...效果？" },
+                    { id: 18, pt: "d = 0.8 é efeito...?", en: "d = 0.8 is effect...?", zh: "d = 0.8是...效果？" },
+                    { id: 19, pt: "IC do Effect Size fornece estimativa com confiança", en: "CI of Effect Size provides confident estimate", zh: "Effect Size的CI提供可信估计" },
+                    { id: 20, pt: "Paradigma moderno busca...ao invés de p-valor", en: "Modern paradigm seeks...instead of p-value", zh: "现代范式寻求...而不是p值" },
+                    { id: 21, pt: "Prática de rejeitar qualquer H₀ com N grande", en: "Practice of rejecting any H₀ with large N", zh: "用大N拒绝任何H₀的做法" },
+                    { id: 22, pt: "H₁ com apenas uma cauda (>, <)", en: "H₁ with only one tail (>, <)", zh: "只有一条尾的H₁(>, <)" },
+                    { id: 23, pt: "H₁ com ambas as caudas (≠)", en: "H₁ with both tails (≠)", zh: "两条尾的H₁(≠)" },
+                    { id: 24, pt: "Quando N fixo, correlação entre Erro I e II", en: "When N fixed, correlation between Type I and II", zh: "当N固定时，第一类和第二类错误的相关性" }
+                ]
+            },
+            // Reinos 6-13 com pares simplificados
+            {
+                nome: "🗡️ Teste t",
+                emoji: "🗡️",
+                pares: [
+                    { id: 1, pt: "Teste t para Uma Amostra: compara contra valor teórico", en: "One-Sample t-test: compares against theoretical value", zh: "单样本t检验：与理论值比较" },
+                    { id: 2, pt: "Teste t para Amostras Independentes", en: "Independent Samples t-test", zh: "独立样本t检验" },
+                    { id: 3, pt: "Teste t Pareado: mesmo grupo em dois momentos", en: "Paired t-test: same group at two times", zh: "配对t检验：同一组在两个时点" },
+                    { id: 4, pt: "Pressupostos: normalidade, homocedasticidade, independência", en: "Assumptions: normality, homogeneity, independence", zh: "假设：正态性、同方差性、独立性" },
+                    { id: 5, pt: "Teste que verifica igualdade de variâncias", en: "Test checking equality of variances", zh: "检查方差相等的测试" },
+                    { id: 6, pt: "Quando variâncias desiguais, usar...?", en: "When unequal variances, use...?", zh: "当方差不等时，使用...?" },
+                    { id: 7, pt: "GL = n₁ + n₂ - 2 (amostras independentes)", en: "df = n₁ + n₂ - 2 (independent samples)", zh: "df = n₁ + n₂ - 2（独立样本）" },
+                    { id: 8, pt: "t = (M - μ) / (s/√n)", en: "t = (M - μ) / (s/√n)", zh: "t = (M - μ) / (s/√n)" },
+                    { id: 9, pt: "Cohen's d = (M₁ - M₂) / Sp", en: "Cohen's d = (M₁ - M₂) / Sp", zh: "Cohen's d = (M₁ - M₂) / Sp" },
+                    { id: 10, pt: "IC 95% inclui zero → efeito não significativo", en: "95% CI includes zero → effect not significant", zh: "95% CI包括零→效果不显著" },
+                    { id: 11, pt: "IC 95% não inclui zero → efeito significativo", en: "95% CI doesn't include zero → effect significant", zh: "95% CI不包括零→效果显著" },
+                    { id: 12, pt: "Pressupostos violados: usar...?", en: "Assumptions violated: use...?", zh: "假设违反：使用...?" },
+                    { id: 13, pt: "Correlação entre pares em teste t pareado", en: "Correlation between pairs in paired t-test", zh: "配对t检验中对之间的相关性" },
+                    { id: 14, pt: "Teste t assume resíduos de distribuição...?", en: "t-test assumes residuals from...distribution?", zh: "t检验假设残差来自...分布?" },
+                    { id: 15, pt: "Número de comparações em teste t bilateral", en: "Number of comparisons in two-tailed t-test", zh: "双尾t检验中的比较次数" },
+                    { id: 16, pt: "Diferença entre Erro Padrão e Desvio Padrão", en: "Difference between Standard Error and SD", zh: "标准误和标准差之间的差异" },
+                    { id: 17, pt: "IC = M ± t_crítico × EP", en: "CI = M ± t_critical × SE", zh: "CI = M ± t_critical × SE" },
+                    { id: 18, pt: "Valor crítico de t para n=30, α=0.05 (bicaudal)", en: "Critical t for n=30, α=0.05 (two-tailed)", zh: "n=30, α=0.05的临界t（双尾）" },
+                    { id: 19, pt: "Aumentar N → IC fica...?", en: "Increasing N → CI becomes...?", zh: "增加N → CI变成...?" },
+                    { id: 20, pt: "d = 0.2 é efeito...?", en: "d = 0.2 is...effect?", zh: "d = 0.2是...效果？" },
+                    { id: 21, pt: "Teste t robusto a desvios de normalidade quando N...?", en: "t-test robust to normality deviations when N...?", zh: "当N...时t检验对正态性偏差的鲁棒性?" },
+                    { id: 22, pt: "Testada com Levene", en: "Tested with Levene", zh: "用Levene测试" },
+                    { id: 23, pt: "Formato APA: t(gl) = valor, p = ..., d = ...", en: "APA format: t(df) = value, p = ..., d = ...", zh: "APA格式：t(df) = value, p = ..., d = ..." },
+                    { id: 24, pt: "Teste t para uma amostra: compara contra H₀: μ =...?", en: "One-sample t-test: compares to H₀: μ =...?", zh: "单样本t检验：与H₀比较：μ =...?" }
+                ]
+            },
+            // Reinos 7-13 (simplificados)
+            {
+                nome: "🌈 TOST",
+                emoji: "🌈",
+                pares: [
+                    { id: 1, pt: "Two One-Sided Tests — alternativa ao NHST", en: "Two One-Sided Tests — NHST alternative", zh: "两个单侧检验 — NHST替代方案" },
+                    { id: 2, pt: "Intervalo de equivalência (SESOI)", en: "Equivalence interval (SESOI)", zh: "等价区间（SESOI）" },
+                    { id: 3, pt: "NHST testa ≠ 0; TOST testa dentro de...?", en: "NHST tests ≠ 0; TOST tests within...?", zh: "NHST测试≠0；TOST测试范围内...?" },
+                    { id: 4, pt: "TOST conclusão 'equivalente' quando...?", en: "TOST conclusion 'equivalent' when...?", zh: "TOST结论'等价'当...?" },
+                    { id: 5, pt: "IC padrão para TOST", en: "Standard CI for TOST", zh: "TOST的标准CI" },
+                    { id: 6, pt: "TOST com IC 90% equivale a α total = ...?", en: "TOST with 90% CI equals α total = ...?", zh: "TOST with 90% CI等于α总数= ...?" },
+                    { id: 7, pt: "Vantagem TOST: permite concluir...?", en: "TOST advantage: allows concluding...?", zh: "TOST优势：允许得出结论...?" },
+                    { id: 8, pt: "Quadrante 1 (ambos significativos): conclusão...?", en: "Quadrant 1 (both significant): conclusion...?", zh: "象限1（都显著）：结论...?" },
+                    { id: 9, pt: "Quadrante 2 (NHST sim, TOST não): conclusão...?", en: "Quadrant 2 (NHST yes, TOST no): conclusion...?", zh: "象限2（NHST是，TOST否）：结论...?" },
+                    { id: 10, pt: "Quadrante 3 (NHST não, TOST sim): conclusão...?", en: "Quadrant 3 (NHST no, TOST yes): conclusion...?", zh: "象限3（NHST否，TOST是）：结论...?" },
+                    { id: 11, pt: "Quadrante 4 (nenhum significativo): conclusão...?", en: "Quadrant 4 (neither significant): conclusion...?", zh: "象限4（都不显著）：结论...?" },
+                    { id: 12, pt: "SESOI deve ser definido ANTES...?", en: "SESOI must be defined BEFORE...?", zh: "SESOI必须在...之前定义？" },
+                    { id: 13, pt: "TOST útil em estudos de...?", en: "TOST useful in...studies?", zh: "TOST在...研究中有用？" },
+                    { id: 14, pt: "Teste singular vs Testes Simétricos", en: "Singular test vs Symmetric tests", zh: "单数测试 vs 对称测试" },
+                    { id: 15, pt: "TOST resolve qual problema do NHST?", en: "TOST solves which NHST problem?", zh: "TOST解决NHST的哪个问题？" },
+                    { id: 16, pt: "Para TOST pareado, usar teste t pareado...?", en: "For paired TOST, use paired t-test...?", zh: "对于配对TOST，使用配对t检验...?" },
+                    { id: 17, pt: "Para TOST independente, usar teste t...?", en: "For independent TOST, use...t-test?", zh: "对于独立TOST，使用...t检验？" },
+                    { id: 18, pt: "IC 90% dentro de SESOI → conclusão...?", en: "90% CI within SESOI → conclusion...?", zh: "90% CI在SESOI内→结论...?" },
+                    { id: 19, pt: "IC 90% fora de SESOI → conclusão...?", en: "90% CI outside SESOI → conclusion...?", zh: "90% CI在SESOI外→结论...?" },
+                    { id: 20, pt: "SESOI definido em...?", en: "SESOI defined in...?", zh: "SESOI定义为...?" },
+                    { id: 21, pt: "Publicação negativa incentivada por...?", en: "Negative publication encouraged by...?", zh: "消极出版受到鼓励...?" },
+                    { id: 22, pt: "Poder assimétrico entre NHST e TOST quando Δ=0", en: "Asymmetric power between NHST and TOST when Δ=0", zh: "当Δ=0时NHST和TOST之间的不对称功效" },
+                    { id: 23, pt: "'Não significativo' vs 'Equivalente'", en: "'Not significant' vs 'Equivalent'", zh: "'不显著' vs '等价'" },
+                    { id: 24, pt: "TOST em Ciência Aberta para...?", en: "TOST in Open Science for...?", zh: "开放科学中的TOST...?" }
+                ]
+            },
+            // Reinos 8-13 (simplificados ainda mais para caber tudo)
+            {
+                nome: "🍖 ANOVA 1 Fator",
+                emoji: "🍖",
+                pares: [
+                    { id: 1, pt: "Teste para 3+ grupos independentes", en: "Test for 3+ independent groups", zh: "3+个独立组的测试" },
+                    { id: 2, pt: "SST = SSM + SSR", en: "SST = SSM + SSR", zh: "SST = SSM + SSR" },
+                    { id: 3, pt: "SSM reflete variação de...?", en: "SSM reflects variation of...?", zh: "SSM反映...的变化？" },
+                    { id: 4, pt: "SSR reflete variação dentro de...?", en: "SSR reflects variation within...?", zh: "SSR反映...内的变化？" },
+                    { id: 5, pt: "F = MSM / MSR", en: "F = MSM / MSR", zh: "F = MSM / MSR" },
+                    { id: 6, pt: "H₀: todas as médias são...?", en: "H₀: all means are...?", zh: "H₀：所有均值都是...？" },
+                    { id: 7, pt: "GL_total = N-1; GL_between = k-1; GL_within = ...?", en: "df_total = N-1; df_between = k-1; df_within = ...?", zh: "df_total = N-1; df_between = k-1; df_within = ...?" },
+                    { id: 8, pt: "Teste de homocedasticidade", en: "Homogeneity of variance test", zh: "同方差性测试" },
+                    { id: 9, pt: "Effect size para ANOVA", en: "Effect size for ANOVA", zh: "ANOVA的效果大小" },
+                    { id: 10, pt: "ω² é versão...de η²?", en: "ω² is...version of η²?", zh: "ω²是η²的...版本？" },
+                    { id: 11, pt: "Quando F significativo, comparar com...?", en: "When F significant, compare with...?", zh: "当F显著时，与...比较？" },
+                    { id: 12, pt: "Post-hoc que controla FWER", en: "Post-hoc controlling FWER", zh: "控制FWER的事后检验" },
+                    { id: 13, pt: "Tukey HSD = diferença honestamente...?", en: "Tukey HSD = honestly...difference?", zh: "Tukey HSD =诚实的...差异？" },
+                    { id: 14, pt: "Contraste planejado vs exploratório", en: "Planned vs exploratory contrasts", zh: "计划 vs 探索性对比" },
+                    { id: 15, pt: "ANOVA é caso especial de...?", en: "ANOVA is special case of...?", zh: "ANOVA是...的特殊情况？" },
+                    { id: 16, pt: "Pressupostos: normalidade, homocedasticidade, independência", en: "Assumptions: normality, homogeneity, independence", zh: "假设：正态性、同方差性、独立性" },
+                    { id: 17, pt: "ANOVA robusto a viols. de normalidade quando n > ...?", en: "ANOVA robust to normality violations when n > ...?", zh: "当n > ...时ANOVA对正态性违反的鲁棒性？" },
+                    { id: 18, pt: "Alternativa não-paramétrica", en: "Non-parametric alternative", zh: "非参数替代方案" },
+                    { id: 19, pt: "Correlação spurious entre fatores", en: "Spurious correlation between factors", zh: "因子之间的虚假相关性" },
+                    { id: 20, pt: "Poder estatístico em ANOVA", en: "Statistical power in ANOVA", zh: "ANOVA中的统计功效" },
+                    { id: 21, pt: "Effect size médio η² ≈ ...?", en: "Average effect size η² ≈ ...?", zh: "平均效果大小η²≈...？" },
+                    { id: 22, pt: "ANOVA assume variância...?", en: "ANOVA assumes...variance?", zh: "ANOVA假设...方差？" },
+                    { id: 23, pt: "Matriz de código para ANOVA", en: "Contrast coding matrix", zh: "ANOVA对比编码矩阵" },
+                    { id: 24, pt: "Formato APA: F(gl₁, gl₂) = ...?", en: "APA format: F(df₁, df₂) = ...?", zh: "APA格式：F(df₁, df₂) = ...?" }
+                ]
+            },
+            // Reinos 9-13 (simplificados)
+            {
+                nome: "🧪 ANOVA Fatorial",
+                emoji: "🧪",
+                pares: [
+                    { id: 1, pt: "ANOVA com 2+ fatores", en: "ANOVA with 2+ factors", zh: "2+因子的ANOVA" },
+                    { id: 2, pt: "Efeito de um fator ignorando outros", en: "Effect of one factor ignoring others", zh: "一个因子的效果，忽视其他" },
+                    { id: 3, pt: "Efeito quando impacto depende do nível de outro", en: "Effect when impact depends on another level", zh: "当影响取决于另一个因子的效果" },
+                    { id: 4, pt: "Gráfico com linhas não-paralelas indica...?", en: "Non-parallel lines in graph indicate...?", zh: "图中非平行线表示...？" },
+                    { id: 5, pt: "Linhas paralelas indicam sem...?", en: "Parallel lines indicate no...?", zh: "平行线表示没有...？" },
+                    { id: 6, pt: "ANOVA 2×3 significa...?", en: "ANOVA 2×3 means...?", zh: "ANOVA 2×3表示...？" },
+                    { id: 7, pt: "Número de células em ANOVA 2×3", en: "Number of cells in 2×3 ANOVA", zh: "2×3 ANOVA中的单元格数" },
+                    { id: 8, pt: "Erro Type III em ANOVA desbalanceada", en: "Type III error in unbalanced ANOVA", zh: "不平衡ANOVA中的第三类错误" },
+                    { id: 9, pt: "'Familywise error rate' em comparações múltiplas", en: "'Familywise error rate' in multiple comparisons", zh: "多重比较中的'族群误差率'" },
+                    { id: 10, pt: "Correção Bonferroni divide α por...?", en: "Bonferroni correction divides α by...?", zh: "Bonferroni修正将α除以...？" },
+                    { id: 11, pt: "Interação ordinal vs desordenada", en: "Ordinal vs disordinal interaction", zh: "序数 vs 非序数相互作用" },
+                    { id: 12, pt: "Quando interação sig., interpretar efeitos...", en: "When interaction sig., interpret effects...", zh: "当相互作用显著时，解释效果..." },
+                    { id: 13, pt: "Partição de variância em ANOVA Fatorial", en: "Variance partition in Factorial ANOVA", zh: "因子方差分析中的方差分区" },
+                    { id: 14, pt: "Effect size para ANOVA Fatorial", en: "Effect size for Factorial ANOVA", zh: "因子方差分析的效果大小" },
+                    { id: 15, pt: "Poder depende de tamanho, N, α, células", en: "Power depends on size, N, α, cells", zh: "功效取决于大小、N、α、单元格" },
+                    { id: 16, pt: "Comparações simples: um nível vs níveis outro", en: "Simple effects: one level vs levels of other", zh: "简单效果：一个水平 vs 另一个的水平" },
+                    { id: 17, pt: "Análise após ANOVA Fatorial sig.", en: "Analysis after significant Factorial ANOVA", zh: "显著因子方差分析后的分析" },
+                    { id: 18, pt: "ANOVA Fatorial é caso especial de...?", en: "Factorial ANOVA special case of...?", zh: "因子方差分析是...的特殊情况？" },
+                    { id: 19, pt: "Pressupostos: normalidade, homog., independência, ausência de...?", en: "Assumptions: normality, homogeneity, independence, no...?", zh: "假设：正态性、同方差性、独立性、无...？" },
+                    { id: 20, pt: "Desenho equilibrado: n igual em...?", en: "Balanced design: n equal in...?", zh: "平衡设计：n相等...？" },
+                    { id: 21, pt: "Desenho desbalanceado: n desigual entre...", en: "Unbalanced: n unequal between...", zh: "不平衡：n不相等..." },
+                    { id: 22, pt: "Type of SS mais robusto em desbalanceado", en: "Type of SS most robust in unbalanced", zh: "不平衡中最稳健的SS类型" },
+                    { id: 23, pt: "Interação de ordem superior (3-way, etc)", en: "Higher-order interaction (3-way, etc)", zh: "高阶相互作用（3路等）" },
+                    { id: 24, pt: "Gráfico de interação com eixos X e Y", en: "Interaction plot with X and Y axes", zh: "具有X和Y轴的交互图" }
+                ]
+            },
+            // Reinos finais
+            {
+                nome: "⏳ ANOVA MR",
+                emoji: "⏳",
+                pares: [
+                    { id: 1, pt: "ANOVA com mesmos participantes em múltiplas condições", en: "ANOVA with same participants in conditions", zh: "在多个条件下使用相同参与者的ANOVA" },
+                    { id: 2, pt: "Vantagem MR: controla variação...?", en: "Advantage MR: controls variation...?", zh: "MR的优势：控制变化...？" },
+                    { id: 3, pt: "Pressupostos especiais: esfericidade, normalidade", en: "Special assumptions: sphericity, normality", zh: "特殊假设：球形性、正态性" },
+                    { id: 4, pt: "Teste de esfericidade", en: "Sphericity test", zh: "球形性测试" },
+                    { id: 5, pt: "Quando Mauchly sig., usar correção...?", en: "When Mauchly sig., use correction...?", zh: "当Mauchly显著时，使用修正...？" },
+                    { id: 6, pt: "Greenhouse-Geisser ε < 1 reduz GL para...?", en: "GG ε < 1 reduces df to...?", zh: "GG ε < 1将df减少到...？" },
+                    { id: 7, pt: "Partição variância MR: between, within, erro", en: "MR variance partition: between, within, error", zh: "MR方差分区：之间、之内、误差" },
+                    { id: 8, pt: "MSwithin = SSerro / GLerro", en: "MSwithin = SSerro / dferro", zh: "MSwithin = SSerro / dferro" },
+                    { id: 9, pt: "Effect size em MR", en: "Effect size in MR", zh: "MR中的效果大小" },
+                    { id: 10, pt: "GL_efeito = k-1; GL_erro = (k-1)(n-1)", en: "df_effect = k-1; df_error = (k-1)(n-1)", zh: "df_effect = k-1; df_error = (k-1)(n-1)" },
+                    { id: 11, pt: "Alternativa não-paramétrica para MR", en: "Non-parametric alternative to MR", zh: "MR的非参数替代方案" },
+                    { id: 12, pt: "Amostra pequena com esfericidade violada, usar...", en: "Small sample with sphericity violation, use...", zh: "样本小且违反球形性，使用..." },
+                    { id: 13, pt: "MR: poder aumenta porque variabilidade reduz", en: "MR: power increases as variability reduces", zh: "MR：当变异性减少时功效增加" },
+                    { id: 14, pt: "Simetria composta", en: "Compound symmetry", zh: "复合对称性" },
+                    { id: 15, pt: "Esfericidade mais forte que simetria composta...ou não?", en: "Sphericity stronger than compound symmetry...or not?", zh: "球形性强于复合对称性...还是不？" },
+                    { id: 16, pt: "ANOVA MR com covariável", en: "ANOVA MR with covariate", zh: "带协变量的ANOVA MR" },
+                    { id: 17, pt: "Dropout em MR: risco de análise tendenciosa", en: "Dropout in MR: bias risk", zh: "MR中的缺失：偏差风险" },
+                    { id: 18, pt: "Bloqueio de variância reduz MSserro", en: "Blocking variance reduces MSerror", zh: "阻止方差减少MSerror" },
+                    { id: 19, pt: "Post-hoc após ANOVA MR sig.", en: "Post-hoc after significant MR ANOVA", zh: "显著MR ANOVA后的事后检验" },
+                    { id: 20, pt: "Formato APA com Greenhouse-Geisser", en: "APA format with Greenhouse-Geisser", zh: "使用Greenhouse-Geisser的APA格式" },
+                    { id: 21, pt: "Efeito de prática ameaça validade em MR", en: "Practice effect threatens MR validity", zh: "实践效果威胁MR有效性" },
+                    { id: 22, pt: "Contrabalanceamento reduz efeito de...?", en: "Counterbalancing reduces effect of...?", zh: "平衡减少...的效果？" },
+                    { id: 23, pt: "Potência aumenta em MR porque variância reduz", en: "Power increases in MR as variance reduces", zh: "MR中当方差减少时功效增加" },
+                    { id: 24, pt: "Matriz variância-covariância deve ser...?", en: "Variance-covariance matrix must be...?", zh: "方差-协方差矩阵必须是...？" }
+                ]
+            },
+            {
+                nome: "📚 ANCOVA",
+                emoji: "📚",
+                pares: [
+                    { id: 1, pt: "ANOVA + análise de covariância", en: "ANOVA + covariance analysis", zh: "ANOVA +协方差分析" },
+                    { id: 2, pt: "Variável contínua que reduz erro", en: "Continuous variable reducing error", zh: "连续变量减少误差" },
+                    { id: 3, pt: "Objetivo ANCOVA: remover variação não atribuída", en: "ANCOVA goal: remove unexplained variation", zh: "ANCOVA目标：消除未解释的变化" },
+                    { id: 4, pt: "Pressupostos ANCOVA especiais", en: "ANCOVA special assumptions", zh: "ANCOVA特殊假设" },
+                    { id: 5, pt: "Teste para homogeneidade de inclinações", en: "Test for homogeneity of slopes", zh: "斜率同质性测试" },
+                    { id: 6, pt: "Homogeneidade de inclinações violada → ANCOVA...", en: "Slopes homogeneity violated → ANCOVA...", zh: "斜率同质性违反→ ANCOVA..." },
+                    { id: 7, pt: "ANCOVA particiona: covariável, tratamento, erro", en: "ANCOVA partitions: covariate, treatment, error", zh: "ANCOVA分区：协变量、处理、误差" },
+                    { id: 8, pt: "Correlação entre covariável e VD deve ser...?", en: "Correlation between covariate and DV must be...?", zh: "协变量和DV之间的相关性必须是...？" },
+                    { id: 9, pt: "Ajuste de médias via regressão...", en: "Adjustment of means via regression...", zh: "通过回归调整均值..." },
+                    { id: 10, pt: "Effect size em ANCOVA", en: "Effect size in ANCOVA", zh: "ANCOVA中的效果大小" },
+                    { id: 11, pt: "Vantagem ANCOVA: aumenta poder ao controlar...", en: "ANCOVA advantage: increases power controlling...", zh: "ANCOVA优势：通过控制增加功效..." },
+                    { id: 12, pt: "Covariável não deve correlacionar com...?", en: "Covariate should not correlate with...?", zh: "协变量不应该与...相关？" },
+                    { id: 13, pt: "Se covariável correlacionada com fator, ajuste é...", en: "If covariate correlates with factor, adjustment is...", zh: "如果协变量与因子相关，调整是..." },
+                    { id: 14, pt: "ANCOVA caso especial de...?", en: "ANCOVA special case of...?", zh: "ANCOVA是...的特殊情况？" },
+                    { id: 15, pt: "Múltiplas covariáveis em ANCOVA", en: "Multiple covariates in ANCOVA", zh: "ANCOVA中的多个协变量" },
+                    { id: 16, pt: "Regressão parcial via regressão...", en: "Partial regression via regression...", zh: "通过回归的偏回归..." },
+                    { id: 17, pt: "Homocedasticidade testada com...", en: "Homogeneity tested with...", zh: "用...测试同方差性" },
+                    { id: 18, pt: "ANCOVA assumindo relação...?", en: "ANCOVA assuming...relationship?", zh: "ANCOVA假设...关系？" },
+                    { id: 19, pt: "Interpretação: ANCOVA compara médias ajustadas", en: "Interpretation: ANCOVA compares adjusted means", zh: "解释：ANCOVA比较调整的均值" },
+                    { id: 20, pt: "Post-hoc após ANCOVA sig.", en: "Post-hoc after significant ANCOVA", zh: "显著ANCOVA后的事后检验" },
+                    { id: 21, pt: "Seleção de covariáveis deve ser...?", en: "Covariate selection must be...?", zh: "协变量选择必须是...？" },
+                    { id: 22, pt: "Efeito suppressor em ANCOVA", en: "Suppressor effect in ANCOVA", zh: "ANCOVA中的抑制效果" },
+                    { id: 23, pt: "Poder aumenta se r(covariável, VD) é...?", en: "Power increases if r(covariate, DV) is...?", zh: "如果r(协变量、DV)是...，功效增加？" },
+                    { id: 24, pt: "Confundimento potencial: covariável correlacionada", en: "Potential confounding: covariate correlated", zh: "潜在混淆：协变量相关" }
+                ]
+            },
+            {
+                nome: "🏛️ MANOVA",
+                emoji: "🏛️",
+                pares: [
+                    { id: 1, pt: "Teste que compara múltiplas VDs entre grupos", en: "Test comparing multiple DVs across groups", zh: "在组间比较多个DV的测试" },
+                    { id: 2, pt: "Matriz SSCP: somas de quadrados e produtos", en: "SSCP matrix: sums of squares and products", zh: "SSCP矩阵：平方和与乘积" },
+                    { id: 3, pt: "H₀ em MANOVA: vetor de médias igual entre...?", en: "H₀ in MANOVA: mean vector equal between...?", zh: "MANOVA中的H₀：均值向量相等...？" },
+                    { id: 4, pt: "Teste igualdade de matrizes covariância", en: "Test equality of covariance matrices", zh: "测试协方差矩阵相等" },
+                    { id: 5, pt: "Box M sig. → MANOVA robusto com N...?", en: "Box M sig. → MANOVA robust with N...?", zh: "Box M显著→MANOVA在N...时稳健？" },
+                    { id: 6, pt: "Estatísticas multivariadas: Wilks, Pillai, Hotelling, Roy", en: "Multivariate stats: Wilks, Pillai, Hotelling, Roy", zh: "多元统计：Wilks、Pillai、Hotelling、Roy" },
+                    { id: 7, pt: "Wilks Lambda = 0 significa...?", en: "Wilks Lambda = 0 means...?", zh: "Wilks Lambda = 0意味着...？" },
+                    { id: 8, pt: "Wilks Lambda = 1 significa...?", en: "Wilks Lambda = 1 means...?", zh: "Wilks Lambda = 1意味着...？" },
+                    { id: 9, pt: "MANOVA sig. → conduzir...?", en: "MANOVA sig. → conduct...?", zh: "MANOVA显著→进行...？" },
+                    { id: 10, pt: "Análise discriminante identifica quais VDs...?", en: "Discriminant analysis identifies which DVs...?", zh: "判别分析确定哪些DV...？" },
+                    { id: 11, pt: "Pressupostos MANOVA", en: "MANOVA assumptions", zh: "MANOVA假设" },
+                    { id: 12, pt: "MANOVA robusto com N...?", en: "MANOVA robust with N...?", zh: "MANOVA在N...时稳健？" },
+                    { id: 13, pt: "Correlação entre VDs ideal: moderada ou alta?", en: "Ideal correlation between DVs: moderate or high?", zh: "DV之间的理想相关性：中等还是高？" },
+                    { id: 14, pt: "VDs muito correlacionadas → MANOVA não...", en: "Highly correlated DVs → MANOVA not...", zh: "高度相关的DV → MANOVA不..." },
+                    { id: 15, pt: "MANOVA caso especial de...?", en: "MANOVA special case of...?", zh: "MANOVA是...的特殊情况？" },
+                    { id: 16, pt: "MANOVA com 2+ fatores chamado...?", en: "MANOVA with 2+ factors called...?", zh: "带有2+因子的MANOVA称为...？" },
+                    { id: 17, pt: "Follow-up após MANOVA sig.: conduzir...?", en: "Follow-up after MANOVA sig.: conduct...?", zh: "MANOVA显著后的后续：进行...？" },
+                    { id: 18, pt: "Correção Bonferroni em ANOVAs follow-up", en: "Bonferroni correction in follow-up ANOVAs", zh: "后续ANOVA中的Bonferroni修正" },
+                    { id: 19, pt: "Effect size em MANOVA", en: "Effect size in MANOVA", zh: "MANOVA中的效果大小" },
+                    { id: 20, pt: "Poder MANOVA depende de...?", en: "MANOVA power depends on...?", zh: "MANOVA功效取决于...？" },
+                    { id: 21, pt: "Aplicação MANOVA: múltiplos...?", en: "MANOVA application: multiple...?", zh: "MANOVA应用：多个...？" },
+                    { id: 22, pt: "Pillai vs Wilks: Pillai mais robusta quando...?", en: "Pillai vs Wilks: Pillai more robust when...?", zh: "Pillai vs Wilks：Pillai在...时更稳健？" },
+                    { id: 23, pt: "Matriz covariância testada com...?", en: "Covariance matrix tested with...?", zh: "协方差矩阵用...测试？" },
+                    { id: 24, pt: "MANOVA trata VDs como...?", en: "MANOVA treats DVs as...?", zh: "MANOVA将DV视为...？" }
+                ]
+            },
+            {
+                nome: "👑 MANCOVA",
+                emoji: "👑",
+                pares: [
+                    { id: 1, pt: "MANOVA + covariáveis", en: "MANOVA + covariates", zh: "MANOVA +协变量" },
+                    { id: 2, pt: "MANCOVA particiona em...?", en: "MANCOVA partitions into...?", zh: "MANCOVA分区为...？" },
+                    { id: 3, pt: "Pressupostos MANCOVA especiais", en: "MANCOVA special assumptions", zh: "MANCOVA特殊假设" },
+                    { id: 4, pt: "Teste para homogeneidade multivariada", en: "Multivariate homogeneity test", zh: "多元同质性测试" },
+                    { id: 5, pt: "Ajuste multivariado de médias", en: "Multivariate adjustment of means", zh: "均值的多元调整" },
+                    { id: 6, pt: "MANCOVA vantajoso quando covariáveis...", en: "MANCOVA advantageous when covariates...", zh: "当协变量...时MANCOVA有利" },
+                    { id: 7, pt: "Se covariável correlacionada com fator, ajuste...", en: "If covariate correlates with factor, adjustment...", zh: "如果协变量与因子相关，调整..." },
+                    { id: 8, pt: "Poder MANCOVA aumenta ao controlar...", en: "MANCOVA power increases controlling...", zh: "MANCOVA功效通过控制增加..." },
+                    { id: 9, pt: "Matriz covariância deve ser...?", en: "Covariance matrix must be...?", zh: "协方差矩阵必须是...？" },
+                    { id: 10, pt: "Follow-up após MANCOVA sig.", en: "Follow-up after significant MANCOVA", zh: "显著MANCOVA后的后续" },
+                    { id: 11, pt: "MANCOVA caso especial de...?", en: "MANCOVA special case of...?", zh: "MANCOVA是...的特殊情况？" },
+                    { id: 12, pt: "Seleção covariáveis deve ser...?", en: "Covariate selection must be...?", zh: "协变量选择必须是...？" },
+                    { id: 13, pt: "Múltiplas covariáveis em MANCOVA", en: "Multiple covariates in MANCOVA", zh: "MANCOVA中的多个协变量" },
+                    { id: 14, pt: "Efeito suppressor em MANCOVA", en: "Suppressor effect in MANCOVA", zh: "MANCOVA中的抑制效果" },
+                    { id: 15, pt: "Linearidade entre covariáveis e cada VD", en: "Linearity between covariates and DVs", zh: "协变量和DV之间的线性关系" },
+                    { id: 16, pt: "MANCOVA com 2+ fatores chamado...?", en: "MANCOVA with 2+ factors called...?", zh: "带有2+因子的MANCOVA称为...？" },
+                    { id: 17, pt: "Interpretação MANCOVA: compara vetores ajustados", en: "MANCOVA interpretation: compares adjusted vectors", zh: "MANCOVA解释：比较调整向量" },
+                    { id: 18, pt: "Teste esfericidade em MANCOVA MR", en: "Sphericity test in MR MANCOVA", zh: "MR MANCOVA中的球形性测试" },
+                    { id: 19, pt: "Confundimento controlado por...?", en: "Confounding controlled by...?", zh: "混淆被...控制？" },
+                    { id: 20, pt: "Poder MANCOVA depende de r covariáveis-VDs", en: "MANCOVA power depends on r covariates-DVs", zh: "MANCOVA功效取决于r协变量-DV" },
+                    { id: 21, pt: "Robustez a viols. normalidade com N...?", en: "Robustness to normality violations with N...?", zh: "对正态性违反的鲁棒性，N...？" },
+                    { id: 22, pt: "Integração MANOVA e ANCOVA em...?", en: "Integration of MANOVA and ANCOVA in...?", zh: "MANOVA和ANCOVA的集成在...？" },
+                    { id: 23, pt: "Parcimônia em MANCOVA", en: "Parsimony in MANCOVA", zh: "MANCOVA中的简洁性" },
+                    { id: 24, pt: "Adjusted Centroid Comparisons em MANCOVA", en: "Adjusted Centroid Comparisons in MANCOVA", zh: "MANCOVA中的调整质心比较" }
+                ]
+            },
+            {
+                nome: "❄️ Não-Paramétricos",
+                emoji: "❄️",
+                pares: [
+                    { id: 1, pt: "Testes que não assumem distribuição normal", en: "Tests not assuming normal distribution", zh: "不假设正态分布的检验" },
+                    { id: 2, pt: "Quando pressupostos violados, usar...?", en: "When assumptions violated, use...?", zh: "当假设违反时，使用...？" },
+                    { id: 3, pt: "Alternativa não-param. para t independente", en: "Non-parametric alternative to independent t", zh: "独立t的非参数替代方案" },
+                    { id: 4, pt: "Alternativa não-param. para t pareado", en: "Non-parametric alternative to paired t", zh: "配对t的非参数替代方案" },
+                    { id: 5, pt: "Alternativa não-param. para ANOVA 1 fator", en: "Non-param. alternative to one-way ANOVA", zh: "单因素ANOVA的非参数替代方案" },
+                    { id: 6, pt: "Alternativa não-param. para ANOVA MR", en: "Non-param. alternative to MR ANOVA", zh: "MR ANOVA的非参数替代方案" },
+                    { id: 7, pt: "Mann-Whitney U testa se distribuições são...?", en: "Mann-Whitney U tests if distributions are...?", zh: "Mann-Whitney U测试分布是否...？" },
+                    { id: 8, pt: "Procedimento Mann-Whitney: ranks soma de...?", en: "Mann-Whitney procedure: ranks sum of...?", zh: "Mann-Whitney过程：排名...的总和？" },
+                    { id: 9, pt: "Wilcoxon signed-rank usa ranks de...?", en: "Wilcoxon signed-rank uses ranks of...?", zh: "Wilcoxon符号秩使用...的排名？" },
+                    { id: 10, pt: "Kruskal-Wallis extende Mann-Whitney para...?", en: "Kruskal-Wallis extends Mann-Whitney to...?", zh: "Kruskal-Wallis将Mann-Whitney扩展到...？" },
+                    { id: 11, pt: "Friedman extende Wilcoxon para...?", en: "Friedman extends Wilcoxon to...?", zh: "Friedman将Wilcoxon扩展到...？" },
+                    { id: 12, pt: "Post-hoc após Kruskal-Wallis sig.", en: "Post-hoc after significant Kruskal-Wallis", zh: "显著Kruskal-Wallis后的事后检验" },
+                    { id: 13, pt: "Effect size em Mann-Whitney U: r = ...?", en: "Effect size in Mann-Whitney U: r = ...?", zh: "Mann-Whitney U中的效果大小：r = ...？" },
+                    { id: 14, pt: "Correlação não-param. entre variáveis", en: "Non-parametric correlation between variables", zh: "变量间的非参数相关性" },
+                    { id: 15, pt: "Spearman ρ: correlação de...?", en: "Spearman ρ: correlation of...?", zh: "Spearman ρ：...的相关性？" },
+                    { id: 16, pt: "Kendall τ: alternativa mais robusta a...?", en: "Kendall τ: alternative more robust to...?", zh: "Kendall τ：对...更稳健的替代方案？" },
+                    { id: 17, pt: "Teste entre categórica e contínua", en: "Test between categorical and continuous", zh: "分类变量和连续变量之间的测试" },
+                    { id: 18, pt: "Teste associação entre categóricas", en: "Test of association between categorical", zh: "分类变量间的关联测试" },
+                    { id: 19, pt: "Vantagem: não assume distribuição...?", en: "Advantage: doesn't assume...distribution?", zh: "优势：不假设...分布？" },
+                    { id: 20, pt: "Desvantagem: menor poder quando...?", en: "Disadvantage: lower power when...?", zh: "劣势：当...时功效较低？" },
+                    { id: 21, pt: "Transformação (log, raiz) induz...?", en: "Transformation (log, sqrt) induces...?", zh: "变换（对数、平方根）诱导...？" },
+                    { id: 22, pt: "Dados ordinais (ranks) → teste...?", en: "Ordinal data (ranks) → test...?", zh: "序数数据（排名）→ 测试...？" },
+                    { id: 23, pt: "Dados contínuos muito assimétricos → opção", en: "Highly skewed continuous data → option", zh: "高度偏斜的连续数据→选项" },
+                    { id: 24, pt: "ANOVA MR robusto com N > ...?", en: "MR ANOVA robust with N > ...?", zh: "MR ANOVA在N > ...时稳健？" }
+                ]
+            }
+        ];
+
+        let idioma = 'pt';
+        let estado = {
+            renoAtual: null,
+            cartas: [],
+            viradas: new Set(),
+            paresCompletos: new Set(),
+            selecionadas: [],
+            tempo: 0,
+            pontos: 0,
+            jogoCompleto: false,
+            intervaloTempo: null,
+            dificuldade: 'normal',
+            paresTotal: 6
+        };
+
+        function mudarIdioma(novoIdioma) {
+            idioma = novoIdioma;
+            document.querySelectorAll('.btn-idioma').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            atualizarTextos();
+        }
+
+        function atualizarTextos() {
+            const t = textos[idioma];
+            document.getElementById('titulo-principal').textContent = t.titulo;
+            document.getElementById('subtitulo-principal').textContent = t.subtitulo;
+            document.getElementById('label-basicos').textContent = t.labelBasicos;
+            document.getElementById('label-intermediarios').textContent = t.labelIntermediarios;
+            document.getElementById('label-avancados').textContent = t.labelAvancados;
+            document.getElementById('label-dificuldade').textContent = t.labelDificuldade;
+            document.getElementById('btn-facil').textContent = t.btnFacil;
+            document.getElementById('btn-normal').textContent = t.btnNormal;
+            document.getElementById('btn-dificil').textContent = t.btnDificil;
+            document.getElementById('btn-jogar').textContent = t.btnJogar;
+            document.getElementById('btn-menu-jogo').textContent = t.btnMenu;
+            document.getElementById('titulo-vitoria').textContent = t.tituloVitoria;
+            document.getElementById('texto-vitoria').textContent = t.textoVitoria;
+            document.getElementById('label-tempo-final').textContent = t.labelTempoFinal;
+            document.getElementById('btn-voltar-menu').textContent = t.btnVoltarMenu;
+            document.getElementById('label-tempo').textContent = t.labelTempo;
+            document.getElementById('label-pares').textContent = t.labelPares;
+            document.getElementById('label-restam').textContent = t.labelRestam;
+
+            // Atualizar nomes dos reinos
+            t.reinos.forEach((nome, idx) => {
+                const elem = document.getElementById('reino' + idx);
+                if (elem) elem.textContent = nome;
+            });
+        }
+
+        function selecionarReino(idx) {
+            document.querySelectorAll('.btn-reino').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            estado.renoAtual = idx;
+        }
+
+        function selecionarDificuldade(dif) {
+            document.querySelectorAll('.btn-dificuldade').forEach(btn => btn.classList.remove('ativo'));
+            event.target.classList.add('ativo');
+            estado.dificuldade = dif;
+            estado.paresTotal = dif === 'facil' ? 4 : dif === 'normal' ? 6 : 8;
+        }
+
+        function iniciarJogo() {
+            if (estado.renoAtual === null) {
+                alert(idioma === 'pt' ? 'Selecione um reino!' : idioma === 'en' ? 'Select a realm!' : '选择一个王国!');
+                return;
+            }
+
+            const reino = reinos[estado.renoAtual];
+            estado.tempo = 0;
+            estado.pontos = 0;
+            estado.jogoCompleto = false;
+            estado.viradas = new Set();
+            estado.paresCompletos = new Set();
+            estado.selecionadas = [];
+
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('jogo').classList.add('ativo');
+
+            const paresDisponiveis = [...reino.pares];
+            const paresSelecionados = [];
+            for (let i = 0; i < estado.paresTotal && paresDisponiveis.length > 0; i++) {
+                const idx = Math.floor(Math.random() * paresDisponiveis.length);
+                paresSelecionados.push(paresDisponiveis[idx]);
+                paresDisponiveis.splice(idx, 1);
+            }
+
+            const cartasGeradas = [];
+            paresSelecionados.forEach((par, idx) => {
+                const texto_pergunta = par[idioma] || par.pt;
+                const texto_resposta = paresSelecionados.find(p => p === par)[idioma === 'pt' ? 'pt' : idioma === 'en' ? 'en' : 'zh'] || 'resposta';
+                const respostas = reinos[estado.renoAtual].pares.find(p => p.id === par.id);
+                const resp_text = respostas[idioma] ? respostas[idioma] : (idioma === 'en' ? (par.en || par.pt) : (par.zh || par.pt));
+                
+                cartasGeradas.push({ id: idx * 2, parId: par.id, conteudo: texto_pergunta, tipo: 'pergunta', icon: '❓' });
+                cartasGeradas.push({ id: idx * 2 + 1, parId: par.id, conteudo: resp_text, tipo: 'resposta', icon: '✓' });
+            });
+
+            for (let i = cartasGeradas.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cartasGeradas[i], cartasGeradas[j]] = [cartasGeradas[j], cartasGeradas[i]];
+            }
+
+            estado.cartas = cartasGeradas;
+
+            document.getElementById('titulo-reino').textContent = reino.emoji + ' ' + (idioma === 'pt' ? reino.nome : idioma === 'en' ? textos.en.reinos[estado.renoAtual] : textos.zh.reinos[estado.renoAtual]);
+            const diff_text = idioma === 'pt' ? (estado.dificuldade === 'facil' ? 'Fácil' : estado.dificuldade === 'normal' ? 'Normal' : 'Difícil') : idioma === 'en' ? (estado.dificuldade === 'facil' ? 'Easy' : estado.dificuldade === 'normal' ? 'Normal' : 'Hard') : (estado.dificuldade === 'facil' ? '简单' : estado.dificuldade === 'normal' ? '中等' : '困难');
+            document.getElementById('info-dificuldade').textContent = `${diff_text} — ${estado.paresTotal} ${idioma === 'pt' ? 'pares' : idioma === 'en' ? 'pairs' : '对'}`;
+
+            renderizarGrid();
+            atualizarUI();
+
+            if (estado.intervaloTempo) clearInterval(estado.intervaloTempo);
+            estado.intervaloTempo = setInterval(() => {
+                estado.tempo++;
+                atualizarUI();
+            }, 1000);
+        }
+
+        function renderizarGrid() {
+            const grid = document.getElementById('grid-cartas');
+            grid.innerHTML = '';
+
+            const iconesPorReino = [
+                ['📜', '🖋️', '📝', '✍️', '🧮', '🔬'],
+                ['🏔️', '⛰️', '🪨', '📊', '📈', '🔢'],
+                ['🏛️', '🎲', '🃏', '🎯', '🔮', '🎪'],
+                ['🏘️', '👥', '🤝', '📍', '🗺️', '🧭'],
+                ['⚖️', '⚔️', '🛡️', '👑', '🔱', '⚗️'],
+                ['🗡️', '🛠️', '⚙️', '🔧', '🏹', '🎯'],
+                ['🌈', '🌅', '✨', '💫', '⭐', '🌟'],
+                ['🍖', '🍗', '🥘', '🍲', '🥗', '🍱'],
+                ['🧪', '🧬', '🔬', '⚗️', '🧫', '💉'],
+                ['⏳', '⏰', '🕐', '⌛', '🔔', '📅'],
+                ['📚', '📖', '📕', '📗', '📘', '📙'],
+                ['🏛️', '🏰', '🏯', '🗿', '🕌', '⛪'],
+                ['👑', '💎', '💍', '🔱', '⚜️', '🪑'],
+                ['❄️', '🧊', '⛄', '🌨️', '🥶', '❃']
+            ];
+
+            const icones = iconesPorReino[estado.renoAtual] || iconesPorReino[0];
+
+            estado.cartas.forEach((carta, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'carta';
+
+                const estaVirada = estado.viradas.has(carta.id);
+                const estaCompleta = estado.paresCompletos.has(carta.parId);
+
+                const iconAleatorio = icones[idx % icones.length];
+                btn.setAttribute('data-icon', iconAleatorio);
+
+                if (estaCompleta) {
+                    btn.classList.add('casada');
+                } else if (estaVirada) {
+                    btn.classList.add('virada');
+                }
+
+                btn.textContent = estaVirada ? carta.conteudo : '🛡️';
+                btn.onclick = () => clicarCarta(idx);
+                grid.appendChild(btn);
+            });
+        }
+
+        function clicarCarta(idx) {
+            const carta = estado.cartas[idx];
+
+            if (estado.paresCompletos.has(carta.parId) || estado.jogoCompleto) return;
+            if (estado.viradas.has(carta.id) || estado.selecionadas.includes(idx)) return;
+
+            estado.viradas.add(carta.id);
+            estado.selecionadas.push(idx);
+
+            if (estado.selecionadas.length === 2) {
+                const [idx1, idx2] = estado.selecionadas;
+                if (estado.cartas[idx1].parId === estado.cartas[idx2].parId) {
+                    estado.paresCompletos.add(estado.cartas[idx1].parId);
+                    estado.pontos++;
+                    estado.selecionadas = [];
+                    verificarVitoria();
+                } else {
+                    setTimeout(() => {
+                        estado.viradas.delete(estado.cartas[idx1].id);
+                        estado.viradas.delete(estado.cartas[idx2].id);
+                        estado.selecionadas = [];
+                        renderizarGrid();
+                    }, 1000);
+                }
+            }
+
+            renderizarGrid();
+            atualizarUI();
+        }
+
+        function atualizarUI() {
+            const min = Math.floor(estado.tempo / 60);
+            const seg = estado.tempo % 60;
+            const tempoFormatado = `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+
+            document.getElementById('tempo').textContent = tempoFormatado;
+            document.getElementById('pares').textContent = `${estado.pontos}/${estado.paresTotal}`;
+            document.getElementById('restam').textContent = `${estado.paresTotal - estado.pontos}`;
+        }
+
+        function verificarVitoria() {
+            if (estado.paresCompletos.size === estado.paresTotal) {
+                estado.jogoCompleto = true;
+                clearInterval(estado.intervaloTempo);
+
+                const min = Math.floor(estado.tempo / 60);
+                const seg = estado.tempo % 60;
+                const tempoFormatado = `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+
+                document.getElementById('tempo-final').textContent = tempoFormatado;
+                document.getElementById('overlay-vitoria').classList.add('ativo');
+            }
+        }
+
+        function voltarMenu() {
+            clearInterval(estado.intervaloTempo);
+            document.getElementById('menu').classList.remove('hidden');
+            document.getElementById('jogo').classList.remove('ativo');
+            document.getElementById('overlay-vitoria').classList.remove('ativo');
+        }
+
+        // Inicializar textos
+        atualizarTextos();
+    </script>
+</body>
+</html>
