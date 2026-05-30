@@ -1018,7 +1018,8 @@
             jogoCompleto: false,
             intervaloTempo: null,
             dificuldade: 'normal',
-            paresTotal: 6
+            paresTotal: 6,
+            bloqueado: false
         };
 
         function mudarIdioma(novoIdioma) {
@@ -1173,24 +1174,31 @@
         function clicarCarta(idx) {
             const carta = estado.cartas[idx];
 
+            // Bloqueiar se jogo completo, par já casado, ou jogador está vendo 2 cartas
             if (estado.paresCompletos.has(carta.parId) || estado.jogoCompleto) return;
             if (estado.viradas.has(carta.id) || estado.selecionadas.includes(idx)) return;
+            if (estado.bloqueado) return;
 
             estado.viradas.add(carta.id);
             estado.selecionadas.push(idx);
 
             if (estado.selecionadas.length === 2) {
+                estado.bloqueado = true; // Bloquear cliques enquanto verifica
                 const [idx1, idx2] = estado.selecionadas;
                 if (estado.cartas[idx1].parId === estado.cartas[idx2].parId) {
+                    // Pares casados - permanecem abertos
                     estado.paresCompletos.add(estado.cartas[idx1].parId);
                     estado.pontos++;
                     estado.selecionadas = [];
+                    estado.bloqueado = false;
                     verificarVitoria();
                 } else {
+                    // Pares não casados - fecham após 1 segundo
                     setTimeout(() => {
                         estado.viradas.delete(estado.cartas[idx1].id);
                         estado.viradas.delete(estado.cartas[idx2].id);
                         estado.selecionadas = [];
+                        estado.bloqueado = false;
                         renderizarGrid();
                     }, 1000);
                 }
